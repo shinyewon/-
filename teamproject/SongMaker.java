@@ -8,7 +8,7 @@ public class SongMaker extends JFrame {
     private static final int ROWS = 8;
     private static final int COLS = 30;
 
-    private Color[] rowColors = {Color.RED, Color.ORANGE, Color.YELLOW, Color.GREEN, Color.BLUE, Color.PINK, Color.MAGENTA, Color.BLACK};
+    private final Color[] rowColors = {Color.RED, Color.ORANGE, Color.YELLOW, Color.GREEN, Color.BLUE, Color.PINK, Color.MAGENTA, Color.BLACK};
 
     public SongMaker() {
         setTitle("SongMaker");
@@ -55,8 +55,8 @@ public class SongMaker extends JFrame {
     }
 
     private class CellClickListener implements ActionListener {
-        private int row;
-        private int col;
+        private final int row;
+        private final int col;
         private Color originalColor;
 
         public CellClickListener(int row, int col) {
@@ -82,7 +82,7 @@ public class SongMaker extends JFrame {
         }
     }
 
-    private class PlayButtonClickListener implements ActionListener {
+    private static class PlayButtonClickListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             // TODO: 재생 버튼이 클릭되었을 때의 동작 추가
@@ -99,10 +99,7 @@ public class SongMaker extends JFrame {
                 if (component instanceof JPanel) {
                     Component[] panelComponents = ((JPanel) component).getComponents();
                     for (Component panelComponent : panelComponents) {
-                        if (panelComponent instanceof JButton) {
-                            JButton button = (JButton) panelComponent;
-                            button.setBackground(null);
-                        }
+                        if (panelComponent instanceof JButton button) button.setBackground(null);
                     }
                 }
             }
@@ -111,6 +108,6 @@ public class SongMaker extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new SongMaker());
+        SwingUtilities.invokeLater(SongMaker::new);
     }
 }
