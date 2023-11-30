@@ -17,7 +17,7 @@ public class SongMaker extends JFrame {
 
         // 상단 패널 (제목)
         JPanel titlePanel = new JPanel();
-        JLabel titleLabel = new JLabel("Title");
+        JLabel titleLabel = new JLabel("Compose melody");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         titlePanel.add(titleLabel);
 
@@ -32,13 +32,18 @@ public class SongMaker extends JFrame {
             }
         }
 
-        // 하단 패널 (재생 버튼)
+        // 하단 패널 (재생, 리셋 버튼)
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
         // 재생 버튼
         JButton playButton = new JButton("Play");
         playButton.addActionListener(new PlayButtonClickListener());
         bottomPanel.add(playButton);
+
+        // 리셋 버튼
+        JButton resetButton = new JButton("Reset");
+        resetButton.addActionListener(new ResetButtonClickListener());
+        bottomPanel.add(resetButton);
 
         // 전체 레이아웃 설정
         setLayout(new BorderLayout());
@@ -82,6 +87,26 @@ public class SongMaker extends JFrame {
         public void actionPerformed(ActionEvent e) {
             // TODO: 재생 버튼이 클릭되었을 때의 동작 추가
             System.out.println("Play button clicked");
+        }
+    }
+
+    private class ResetButtonClickListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            // Reset 버튼 동작 구현
+            Component[] buttons = getContentPane().getComponents();
+            for (Component component : buttons) {
+                if (component instanceof JPanel) {
+                    Component[] panelComponents = ((JPanel) component).getComponents();
+                    for (Component panelComponent : panelComponents) {
+                        if (panelComponent instanceof JButton) {
+                            JButton button = (JButton) panelComponent;
+                            button.setBackground(null);
+                        }
+                    }
+                }
+            }
+            System.out.println("Reset button clicked");
         }
     }
 
