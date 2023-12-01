@@ -70,11 +70,12 @@ public class SongMaker extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             JButton clickedButton = (JButton) e.getSource();
-
+            String wavFilePath = melodyFind(row);
             if (originalColor == null) {
                 // Save the original color before changing
                 originalColor = clickedButton.getBackground();
                 clickedButton.setBackground(rowColors[row]);
+                playWAV(wavFilePath);
             } else {
                 // Restore the original color
                 clickedButton.setBackground(originalColor);
@@ -82,9 +83,12 @@ public class SongMaker extends JFrame {
             }
 
             System.out.println("Clicked on cell: (" + row + ", " + col + ")");
-            String wavFilePath = "";
-
-            // WAV 파일 재생
+            
+        }
+        
+        private String melodyFind(int row) {
+        	// WAV 파일 재생
+        	String wavFilePath = "";
             switch (row) {
             case 0:
                 wavFilePath = "C:\\Users\\LG\\Downloads\\do.wav";
@@ -115,9 +119,9 @@ public class SongMaker extends JFrame {
                 wavFilePath = ""; // Set a default value or handle it according to your needs
                 break;
         }
-            playWAV(wavFilePath);
+        	return wavFilePath;
+
         }
-        
         private void playWAV(String wavFilePath) {
             try {
                 File soundFile = new File(wavFilePath);
