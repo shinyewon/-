@@ -3,6 +3,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.sound.sampled.*;
+import java.io.File;
+import java.io.IOException;
 
 public class SongMaker extends JFrame {
     private static final int ROWS = 8;
@@ -67,11 +70,12 @@ public class SongMaker extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             JButton clickedButton = (JButton) e.getSource();
-
+            String wavFilePath = melodyFind(row);
             if (originalColor == null) {
                 // Save the original color before changing
                 originalColor = clickedButton.getBackground();
                 clickedButton.setBackground(rowColors[row]);
+                playWAV(wavFilePath);
             } else {
                 // Restore the original color
                 clickedButton.setBackground(originalColor);
@@ -79,6 +83,38 @@ public class SongMaker extends JFrame {
             }
 
             System.out.println("Clicked on cell: (" + row + ", " + col + ")");
+
+        }
+
+        private String melodyFind(int row) {
+            // WAV 파일 재생
+            return switch (row) {
+                case 0 -> "C:\\Users\\LG\\Downloads\\do.wav";
+                case 1 -> "C:\\Users\\LG\\Downloads\\re.wav";
+                case 2 -> "C:\\Users\\LG\\Downloads\\mi.wav";
+                case 3 -> "C:\\Users\\LG\\Downloads\\fa.wav";
+                case 4 -> "C:\\Users\\LG\\Downloads\\sol.wav";
+                case 5 -> "C:\\Users\\LG\\Downloads\\la.wav";
+                case 6 -> "C:\\Users\\LG\\Downloads\\si.wav";
+                case 7 -> "C:\\Users\\LG\\Downloads\\do2.wav";
+                // Add more cases for other columns as needed
+                default -> ""; // Set a default value or handle it according to your needs
+            };
+
+        }
+        private void playWAV(String wavFilePath) {
+            try {
+                File soundFile = new File(wavFilePath);
+                AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
+
+                Clip clip = AudioSystem.getClip();
+                clip.open(audioIn);
+
+                clip.start();
+
+            } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -106,6 +142,7 @@ public class SongMaker extends JFrame {
             System.out.println("Reset button clicked");
         }
     }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(SongMaker::new);
