@@ -1,0 +1,58 @@
+package teamproject;
+import javax.sound.sampled.*;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+
+
+public class JButtonWAVPlayerExample {
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            createAndShowGUI();
+        });
+    }
+
+    private static void createAndShowGUI() {
+        JFrame frame = new JFrame("JButton WAV Player Example");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(300, 200);
+
+        JPanel panel = new JPanel();
+        JButton button = new JButton("Play WAV");
+
+        // JButton 클릭 이벤트 처리
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // WAV 파일 경로 설정
+                String wavFilePath = "C:\\Users\\LG\\Downloads\\do.wav";
+
+                // WAV 파일 재생
+                playWAV(wavFilePath);
+            }
+        });
+
+        panel.add(button);
+        frame.add(panel);
+
+        frame.setVisible(true);
+    }
+
+    private static void playWAV(String wavFilePath) {
+        try {
+            File soundFile = new File(wavFilePath);
+            AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
+
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioIn);
+
+            clip.start();
+
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            e.printStackTrace();
+        }
+    }
+}
