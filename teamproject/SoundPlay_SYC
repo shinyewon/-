@@ -82,9 +82,39 @@ public class SongMaker extends JFrame {
             }
 
             System.out.println("Clicked on cell: (" + row + ", " + col + ")");
-            String wavFilePath = "C:\\Users\\LG\\Downloads\\do.wav";
+            String wavFilePath = "";
 
             // WAV 파일 재생
+            switch (row) {
+            case 0:
+                wavFilePath = "C:\\Users\\LG\\Downloads\\do.wav";
+                break;
+            case 1:
+                wavFilePath = "C:\\Users\\LG\\Downloads\\re.wav";
+                break;
+            case 2:
+                wavFilePath = "C:\\Users\\LG\\Downloads\\mi.wav";
+                break;
+            case 3:
+                wavFilePath = "C:\\Users\\LG\\Downloads\\fa.wav";
+                break;
+            case 4:
+                wavFilePath = "C:\\Users\\LG\\Downloads\\sol.wav";
+                break;
+            case 5:
+                wavFilePath = "C:\\Users\\LG\\Downloads\\la.wav";
+                break;
+            case 6:
+                wavFilePath = "C:\\Users\\LG\\Downloads\\si.wav";
+                break;
+            case 7:
+                wavFilePath = "C:\\Users\\LG\\Downloads\\do2.wav";
+                break;
+            // Add more cases for other columns as needed
+            default:
+                wavFilePath = ""; // Set a default value or handle it according to your needs
+                break;
+        }
             playWAV(wavFilePath);
         }
         
