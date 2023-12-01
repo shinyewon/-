@@ -83,12 +83,12 @@ public class SongMaker extends JFrame {
             }
 
             System.out.println("Clicked on cell: (" + row + ", " + col + ")");
-
+            
         }
-
+        
         private String melodyFind(int row) {
-            // WAV 파일 재생
-            return switch (row) {
+        	// WAV 파일 재생
+        	String wavFilePath = switch (row) {
                 case 0 -> "C:\\Users\\LG\\Downloads\\do.wav";
                 case 1 -> "C:\\Users\\LG\\Downloads\\re.wav";
                 case 2 -> "C:\\Users\\LG\\Downloads\\mi.wav";
@@ -100,6 +100,7 @@ public class SongMaker extends JFrame {
                 // Add more cases for other columns as needed
                 default -> ""; // Set a default value or handle it according to your needs
             };
+            return wavFilePath;
 
         }
         private void playWAV(String wavFilePath) {
@@ -142,7 +143,7 @@ public class SongMaker extends JFrame {
             System.out.println("Reset button clicked");
         }
     }
-
+    
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(SongMaker::new);
