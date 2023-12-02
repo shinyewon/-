@@ -10,6 +10,7 @@ import java.io.IOException;
 public class SongMaker extends JFrame {
     private static final int ROWS = 8;
     private static final int COLS = 30;
+    private final JButton[][] buttons; // 버튼을 담을 2차원 배열
 
     private final Color[] rowColors = {Color.RED, Color.ORANGE, Color.YELLOW, Color.GREEN, Color.BLUE, Color.PINK, Color.MAGENTA, Color.BLACK};
 
@@ -26,12 +27,16 @@ public class SongMaker extends JFrame {
 
         // 중간 패널 (8x30 배열 버튼)
         JPanel gridPanel = new JPanel(new GridLayout(ROWS, COLS));
+        buttons = new JButton[ROWS][COLS];
+
         for (int row = 0; row < ROWS; row++) {
             for (int col = 0; col < COLS; col++) {
                 JButton cellButton = new JButton();
                 cellButton.setPreferredSize(new Dimension(10, 10));  // 셀 크기 조정
                 cellButton.addActionListener(new CellClickListener(row, col));
                 gridPanel.add(cellButton);
+
+                buttons[row][col] = cellButton; // 버튼을 배열에 추가
             }
         }
 
@@ -55,6 +60,37 @@ public class SongMaker extends JFrame {
         add(bottomPanel, BorderLayout.SOUTH);
 
         setVisible(true);
+    }
+
+    private String melodyFind(int row) {
+        // WAV 파일 재생
+        return switch (row) {
+            case 0 -> "C:\\Users\\LG\\Downloads\\do.wav";
+            case 1 -> "C:\\Users\\LG\\Downloads\\re.wav";
+            case 2 -> "C:\\Users\\LG\\Downloads\\mi.wav";
+            case 3 -> "C:\\Users\\LG\\Downloads\\fa.wav";
+            case 4 -> "C:\\Users\\LG\\Downloads\\sol.wav";
+            case 5 -> "C:\\Users\\LG\\Downloads\\la.wav";
+            case 6 -> "C:\\Users\\LG\\Downloads\\si.wav";
+            case 7 -> "C:\\Users\\LG\\Downloads\\do2.wav";
+            // Add more cases for other columns as needed
+            default -> ""; // Set a default value or handle it according to your needs
+        };
+
+    }
+    private void playWAV(String wavFilePath) {
+        try {
+            File soundFile = new File(wavFilePath);
+            AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
+
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioIn);
+
+            clip.start();
+
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            e.printStackTrace();
+        }
     }
 
     private class CellClickListener implements ActionListener {
@@ -83,47 +119,34 @@ public class SongMaker extends JFrame {
             }
 
             System.out.println("Clicked on cell: (" + row + ", " + col + ")");
-            
-        }
-        
-        private String melodyFind(int row) {
-        	// WAV 파일 재생
-        	String wavFilePath = switch (row) {
-                case 0 -> "C:\\Users\\LG\\Downloads\\do.wav";
-                case 1 -> "C:\\Users\\LG\\Downloads\\re.wav";
-                case 2 -> "C:\\Users\\LG\\Downloads\\mi.wav";
-                case 3 -> "C:\\Users\\LG\\Downloads\\fa.wav";
-                case 4 -> "C:\\Users\\LG\\Downloads\\sol.wav";
-                case 5 -> "C:\\Users\\LG\\Downloads\\la.wav";
-                case 6 -> "C:\\Users\\LG\\Downloads\\si.wav";
-                case 7 -> "C:\\Users\\LG\\Downloads\\do2.wav";
-                // Add more cases for other columns as needed
-                default -> ""; // Set a default value or handle it according to your needs
-            };
-            return wavFilePath;
-
-        }
-        private void playWAV(String wavFilePath) {
-            try {
-                File soundFile = new File(wavFilePath);
-                AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
-
-                Clip clip = AudioSystem.getClip();
-                clip.open(audioIn);
-
-                clip.start();
-
-            } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-                e.printStackTrace();
-            }
         }
     }
 
-    private static class PlayButtonClickListener implements ActionListener {
+    private class PlayButtonClickListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            // TODO: 재생 버튼이 클릭되었을 때의 동작 추가
+            // Play 버튼이 클릭 되었을 때의 동작
             System.out.println("Play button clicked");
+
+            // 각 버튼에 접근하여 로직 수행
+            for (int col = 0; col < COLS; col++) {
+                for (int row = 0; row < ROWS; row++) {
+                    JButton button = buttons[row][col];
+                    Color buttonColor = button.getBackground();
+
+                    // 버튼 색상에 해당하는 음을 찾고 재생
+                    if (buttonColor == rowColors[row]) {
+                        String wavFilePath = melodyFind(row);
+                        playWAV(wavFilePath);
+                    }
+                }
+                // 각 열에 대한 재생 후 잠시 멈춤 (원하는 시간 간격 설정)
+                try {
+                    Thread.sleep(400); // 음악 재생 간격 (500밀리초 = 0.5초)
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
+            }
         }
     }
 
@@ -143,7 +166,7 @@ public class SongMaker extends JFrame {
             System.out.println("Reset button clicked");
         }
     }
-    
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(SongMaker::new);
