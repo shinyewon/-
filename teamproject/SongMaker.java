@@ -6,8 +6,11 @@ import java.awt.event.ActionListener;
 import javax.sound.sampled.*;
 import java.io.File;
 import java.io.IOException;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 public class SongMaker extends JFrame {
+    private final JSlider intervalSlider;
     private static final int ROWS = 8;
     private static final int COLS = 30;
     private final JButton[][] buttons; // 버튼을 담을 2차원 배열
@@ -19,12 +22,13 @@ public class SongMaker extends JFrame {
         setSize(400, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+        setLayout(new BorderLayout());
+
         // 상단 패널 (제목)
         JPanel titlePanel = new JPanel();
         JLabel titleLabel = new JLabel("Compose melody");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         titlePanel.add(titleLabel);
-
         // 중간 패널 (8x30 배열 버튼)
         JPanel gridPanel = new JPanel(new GridLayout(ROWS, COLS));
         buttons = new JButton[ROWS][COLS];
@@ -53,13 +57,34 @@ public class SongMaker extends JFrame {
         resetButton.addActionListener(new ResetButtonClickListener());
         bottomPanel.add(resetButton);
 
+        //
+
+        intervalSlider = new JSlider(JSlider.HORIZONTAL, 0, 10, 3);
+        bottomPanel.add(intervalSlider);
+        initializeSlider(intervalSlider);
+
         // 전체 레이아웃 설정
-        setLayout(new BorderLayout());
         add(titlePanel, BorderLayout.NORTH);
         add(gridPanel, BorderLayout.CENTER);
         add(bottomPanel, BorderLayout.SOUTH);
 
         setVisible(true);
+    }
+
+    private void initializeSlider(JSlider intervalSlider) {
+        intervalSlider.setMajorTickSpacing(1);
+        intervalSlider.setPaintTicks(true);
+        intervalSlider.setPaintLabels(true);
+
+        // 슬라이더 값 변경 이벤트를 처리하는 리스너 추가
+        intervalSlider.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                // 슬라이더 값이 변경될 때의 추가 로직
+                // 예: 변경된 값을 출력
+                System.out.println("Slider Value: " + intervalSlider.getValue());
+            }
+        });
     }
 
     private String melodyFind(int row) {
@@ -107,6 +132,7 @@ public class SongMaker extends JFrame {
         public void actionPerformed(ActionEvent e) {
             JButton clickedButton = (JButton) e.getSource();
             String wavFilePath = melodyFind(row);
+
             if (originalColor == null) {
                 // Save the original color before changing
                 originalColor = clickedButton.getBackground();
@@ -133,6 +159,13 @@ public class SongMaker extends JFrame {
                 for (int row = 0; row < ROWS; row++) {
                     JButton button = buttons[row][col];
                     Color buttonColor = button.getBackground();
+                    Color transparentSkyBlue = new Color(135, 206, 235, 150);
+                    Color combinedColor = new Color(
+                        (buttonColor.getRed() + transparentSkyBlue.getRed()) / 2,
+                        (buttonColor.getGreen() + transparentSkyBlue.getGreen()) / 2,
+                        (buttonColor.getBlue() + transparentSkyBlue.getBlue()) / 2
+                    );
+                    button.setBackground(combinedColor);
 
                     // 버튼 색상에 해당하는 음을 찾고 재생
                     if (buttonColor == rowColors[row]) {
@@ -140,15 +173,20 @@ public class SongMaker extends JFrame {
                         playWAV(wavFilePath);
                     }
                 }
+
                 // 각 열에 대한 재생 후 잠시 멈춤 (원하는 시간 간격 설정)
                 try {
-                    Thread.sleep(400); // 음악 재생 간격 (500밀리초 = 0.5초)
+                    int sleepInterval = 1000 - intervalSlider.getValue() * 100;
+                    Thread.sleep(sleepInterval);// 음악 재생 간격 (500밀리초 = 0.5초)
                 } catch (InterruptedException ex) {
                     ex.printStackTrace();
                 }
             }
         }
     }
+
+
+
 
     private class ResetButtonClickListener implements ActionListener {
         @Override
