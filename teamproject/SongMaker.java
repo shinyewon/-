@@ -149,43 +149,76 @@ public class SongMaker extends JFrame {
     }
 
     private class PlayButtonClickListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            // Play 버튼이 클릭 되었을 때의 동작
-            System.out.println("Play button clicked");
+        private int currentColumn = 0;
+        private final Color[][] previousColors; // 이전 색을 저장하기 위한 배열
 
-            // 각 버튼에 접근하여 로직 수행
-            for (int col = 0; col < COLS; col++) {
-                for (int row = 0; row < ROWS; row++) {
-                    JButton button = buttons[row][col];
-                    Color buttonColor = button.getBackground();
-                    Color transparentSkyBlue = new Color(135, 206, 235, 150);
-                    Color combinedColor = new Color(
+        public PlayButtonClickListener() {
+            previousColors = new Color[ROWS][COLS];
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            System.out.println("Play button clicked");
+            currentColumn = 0; // Reset column count
+
+            // Stop the timer when all columns are played
+            Timer timer = new Timer(1000 - intervalSlider.getValue() * 100, new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (currentColumn >= COLS) {
+                        restorePreviousColors(currentColumn);
+                        ((Timer) e.getSource()).stop(); // Stop the timer when all columns are played
+                    } else {
+                        playColumnSounds(currentColumn);
+                        updateButtonColors(currentColumn);
+                        currentColumn++;
+                    }
+                }
+            });
+
+            timer.start();
+        }
+
+        private void playColumnSounds(int col) {
+            for (int row = 0; row < ROWS; row++) {
+                JButton button = buttons[row][col];
+                Color buttonColor = button.getBackground();
+
+                if (buttonColor == rowColors[row]) {
+                    String wavFilePath = melodyFind(row);
+                    playWAV(wavFilePath);
+                }
+            }
+        }
+
+        private void updateButtonColors(int col) {
+            for (int row = 0; row < ROWS; row++) {
+                JButton button = buttons[row][col];
+                Color buttonColor = button.getBackground();
+                Color transparentSkyBlue = new Color(135, 206, 235, 150);
+                Color combinedColor = new Color(
                         (buttonColor.getRed() + transparentSkyBlue.getRed()) / 2,
                         (buttonColor.getGreen() + transparentSkyBlue.getGreen()) / 2,
                         (buttonColor.getBlue() + transparentSkyBlue.getBlue()) / 2
-                    );
-                    button.setBackground(combinedColor);
+                );
 
-                    // 버튼 색상에 해당하는 음을 찾고 재생
-                    if (buttonColor == rowColors[row]) {
-                        String wavFilePath = melodyFind(row);
-                        playWAV(wavFilePath);
-                    }
-                }
+                // 이전 색을 저장하고 현재 색으로 업데이트
+                previousColors[row][col] = buttonColor;
+                button.setBackground(combinedColor);
+            }
 
-                // 각 열에 대한 재생 후 잠시 멈춤 (원하는 시간 간격 설정)
-                try {
-                    int sleepInterval = 1000 - intervalSlider.getValue() * 100;
-                    Thread.sleep(sleepInterval);// 음악 재생 간격 (500밀리초 = 0.5초)
-                } catch (InterruptedException ex) {
-                    ex.printStackTrace();
+            // 이전 색을 복원
+            restorePreviousColors(col);
+        }
+
+        private void restorePreviousColors(int col) {
+            if (col > 0) {
+                for (int row = 0; row < ROWS; row++) {
+                    JButton button = buttons[row][col - 1];
+                    button.setBackground(previousColors[row][col - 1]);
                 }
             }
         }
     }
-
-
 
 
     private class ResetButtonClickListener implements ActionListener {
